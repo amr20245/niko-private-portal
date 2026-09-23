@@ -48,7 +48,11 @@ The customer follows the written deposit and payment schedule. Available app cho
 
 ## Photos and privacy
 
-Photos may document conditions, work, estimates, warranties, insurance matters, and disputes. Identifying customer photos should not be used in public advertising without separate permission.
+The company may photograph or record areas reasonably related to requested or approved work before, during, and after the project. Nonpublic project photos may be used for estimating, scheduling, safety, quality control, work documentation, warranty, insurance, payment, and dispute records.
+
+Public use is a separate choice. A project photo should not be posted to the website, social media, advertising, or another public portfolio unless the customer selects and signs **Public non-identifying use approved** or gives another written release. A customer may decline public use without affecting service.
+
+Before publication, selected photos must be checked for faces, children, exact addresses, mail, personal documents, family photographs, license plates, access codes, keys, alarm controls, camera locations, valuables, and other identifying or security details. The company may keep nonpublic project records as reasonably needed and permitted by the signed agreement and applicable law.
 
 ## Disputes
 

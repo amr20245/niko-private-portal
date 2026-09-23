@@ -1,4 +1,4 @@
-# Niko Project Manager v3
+# Niko Project Manager v4
 
 Private, mobile-friendly business system for Niko Residential Holdings, operated by Amr and Nhi LLC.
 
@@ -12,6 +12,11 @@ Private, mobile-friendly business system for Niko Residential Holdings, operated
 - Quote, customer contract, final receipt, and private freelancer agreement
 - Cash App, cash, card, check, and bank-transfer payment choices
 - Before/after photos and material-receipt copies
+- Public website quote requests with optional photo intake
+- Estimate, work, follow-up, and final-walkthrough scheduling
+- Customer calendar links plus downloadable ICS files
+- Customer photo-permission tracking
+- One-click publishing of selected, customer-approved before/after photos
 - Print cover pages showing document number, client, property, date, stage, and logo
 - Private freelancer compensation and gross-difference calculation that never appears on customer documents
 - Installable iPhone app functionality

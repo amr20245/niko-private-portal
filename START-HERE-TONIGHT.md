@@ -14,7 +14,7 @@ Keep this private app in its own GitHub repository. Do not combine it with the p
 2. Open **SQL Editor** and select **New query**.
 3. Open `supabase-setup.sql` from this download.
 4. Copy the complete SQL file into the query box.
-5. Select **Run**. This creates the cloud record table, private job-file bucket, and owner-only security rules.
+5. Select **Run**. This creates the private app state, private job files, private website requests, request-photo storage, customer-approved public projects, portfolio storage, and all required row-level security rules.
 
 ## 2. Create your owner login
 
@@ -33,6 +33,7 @@ Keep this private app in its own GitHub repository. Do not combine it with the p
 5. Replace `PASTE_YOUR_SUPABASE_PROJECT_URL_HERE` with the Project URL.
 6. Replace `PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE` with the Publishable key.
 7. Save `config.js`.
+8. Put the same Project URL and publishable key in the public website’s `config.js` file. The two websites then use the same protected Supabase project.
 
 Never put a secret key, service-role key, database password, account password, or access token in `config.js` or GitHub.
 
@@ -43,7 +44,7 @@ Never put a secret key, service-role key, database password, account password, o
 3. Upload **everything inside `dist`** to the repository root, including the `assets` folder.
 4. Commit the upload to `main`.
 
-The repository root should show `index.html`, `app.js`, `auth.js`, `config.js`, `styles.css`, `sw.js`, `manifest.webmanifest`, and `assets`.
+The repository root should show `index.html`, `app.js`, `auth.js`, `portal.js`, `config.js`, `styles.css`, `enhancements.css`, `sw.js`, `manifest.webmanifest`, and `assets`.
 
 ## 5. Deploy with Cloudflare Pages
 
@@ -55,13 +56,14 @@ The repository root should show `index.html`, `app.js`, `auth.js`, `config.js`, 
 6. Set the build command to `exit 0`.
 7. Set the build output directory to `.` because the site files are at the repository root.
 8. Select **Save and Deploy** and open the new `.pages.dev` address.
+9. Under **Custom domains**, add `app.nikoresidentialholdings.com`.
 
 ## 6. Add the Cloudflare address to Supabase
 
-1. Copy the complete `.pages.dev` address.
+1. Copy both the complete `.pages.dev` address and `https://app.nikoresidentialholdings.com`.
 2. Open **Authentication > URL Configuration** in Supabase.
 3. Set **Site URL** to that address.
-4. Add the address under **Redirect URLs**. Add `/**` at the end if Supabase asks for a wildcard path.
+4. Add both addresses under **Redirect URLs**. Add `/**` to each address if Supabase asks for wildcard paths.
 5. Save.
 
 ## 7. Test before entering real customer information
@@ -78,6 +80,9 @@ The repository root should show `index.html`, `app.js`, `auth.js`, `config.js`, 
 10. Delete the test quote from the dashboard.
 11. Sign in from another device and confirm cloud syncing.
 12. Download a backup from **Settings**.
+13. Submit a test request from the public website, then open **Quote requests** and confirm it appears with its optional photo.
+14. Create an estimate appointment under **Schedule**, open the customer link, and download the calendar file.
+15. Record public photo approval on the test job, publish selected before and after photos, and confirm they appear on the public Our Work page.
 
 ## 8. Install on iPhone
 
@@ -95,4 +100,4 @@ The repository root should show `index.html`, `app.js`, `auth.js`, `config.js`, 
 
 ## Separate public website
 
-The public website has a separate download. Put it in a second repository named `niko-residential-website` and connect it to a second Cloudflare Pages project. It does not connect to Supabase or expose private job information.
+The public website has a separate download. Put it in a second repository named `niko-residential-website` and connect it to a second Cloudflare Pages project using `nikoresidentialholdings.com`. It connects to the same Supabase project for protected quote intake and customer-approved gallery records. Row-level security prevents public visitors from reading requests, private jobs, pricing, addresses, or documents.
