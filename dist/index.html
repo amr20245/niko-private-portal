@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102f45">
+  <meta name="description" content="Create, organize, save, and print Niko Residential Holdings project records.">
+  <title>Niko Project Manager</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/app-icon-192.png">
+  <link rel="apple-touch-icon" href="assets/app-icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section class="auth-shell" id="authShell" aria-labelledby="loginTitle">
+    <div class="auth-visual">
+      <img src="assets/niko-logo.png" alt="Niko Residential Holdings house logo with subtle A and N">
+      <p class="eyebrow">Niko Residential Holdings</p>
+      <h1>Your projects, documents, and job records—securely together.</h1>
+      <p>Operated by Amr and Nhi LLC</p>
+      <div class="auth-points"><span>✓ Quotes and contracts</span><span>✓ Photos and receipts</span><span>✓ Print-ready records</span></div>
+    </div>
+    <div class="auth-card">
+      <div class="mobile-auth-brand"><img src="assets/niko-logo.png" alt=""><strong>Niko Project Manager</strong></div>
+      <p class="eyebrow">Private business system</p>
+      <h2 id="loginTitle">Welcome back</h2>
+      <p class="auth-copy">Sign in with the owner account created in Supabase.</p>
+      <div class="connection-warning" id="connectionWarning" hidden><strong>Finish Supabase setup first.</strong><span>Open <code>config.js</code> and add the project URL and publishable key.</span></div>
+      <form id="loginForm">
+        <label>Email address<input id="loginEmail" type="email" inputmode="email" autocomplete="username" required placeholder="you@email.com"></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+        <button class="primary auth-submit" type="submit">Sign in securely</button>
+      </form>
+      <form id="updatePasswordForm" hidden>
+        <label>New password<input id="newPassword" type="password" autocomplete="new-password" minlength="12" required placeholder="At least 12 characters"></label>
+        <button class="primary auth-submit" type="submit">Update password</button>
+      </form>
+      <button class="text-button" id="forgotPassword" type="button">Send password reset email</button>
+      <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+      <small class="auth-security">Private customer data is protected by Supabase authentication and row-level security after setup.</small>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="brand-mark"><img class="brand-logo" src="assets/niko-logo.png" alt=""><div><strong>Niko</strong><small>Project Manager</small></div></div>
+    <nav aria-label="Main navigation">
+      <button class="nav-btn active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+      <button class="nav-btn" data-view="editor"><span>＋</span>Job workspace</button>
+      <button class="nav-btn" data-view="documents"><span>▤</span>Documents</button>
+      <button class="nav-btn" data-view="policies"><span>§</span>Policies</button>
+      <button class="nav-btn" data-view="settings"><span>⚙</span>Settings</button>
+    </nav>
+    <div class="account-box"><div class="account-avatar">A</div><div><strong id="signedInEmail">Owner</strong><small id="cloudStatusText">Checking cloud…</small></div><button id="signOutButton" title="Sign out" aria-label="Sign out">↪</button></div>
+    <div class="storage-note"><span class="status-dot" id="cloudStatusDot"></span><div><strong id="storageTitle">Protected cloud sync</strong><small>Local backup remains available</small></div></div>
+  </aside>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+      <div><p class="eyebrow">Niko Residential Holdings</p><h1 id="viewTitle">Project dashboard</h1></div>
+      <button class="primary" id="newJobTop">＋ New job</button>
+    </header>
+
+    <section class="view active" id="dashboardView">
+      <div class="hero-panel">
+        <div><span class="pill">Amr and Nhi LLC</span><h2>Every job, from first quote to final receipt.</h2><p>Create professional records, keep photos and costs together, and print from your phone or computer.</p></div>
+        <button class="hero-action" id="newJobHero"><span>＋</span><b>Create a new job</b><small>Start quote Q-<span id="nextNumber">0001</span></small></button>
+      </div>
+      <div class="stats" aria-label="Project summary">
+        <article><small>Total jobs</small><strong id="statJobs">0</strong><span>All saved records</span></article>
+        <article><small>Open projects</small><strong id="statOpen">0</strong><span>Quote or active</span></article>
+        <article><small>Quoted value</small><strong id="statValue">$0</strong><span>Before payments</span></article>
+        <article><small>Outstanding</small><strong id="statDue">$0</strong><span>Remaining balance</span></article>
+      </div>
+      <div class="panel jobs-panel">
+        <div class="panel-head"><div><p class="eyebrow">Project records</p><h2>Recent jobs</h2></div><label class="search"><span>⌕</span><input id="jobSearch" type="search" placeholder="Search customer, address, or number"></label></div>
+        <div id="jobList" class="job-list"></div>
+        <div id="emptyJobs" class="empty-state"><div class="empty-icon">⌂</div><h3>No jobs saved yet</h3><p>Create your first project to prepare a quote, contract, and final receipt.</p><button class="primary" id="newJobEmpty">Create first job</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="editorView">
+      <div class="workspace-head"><div><span class="pill" id="jobStatusBadge">Draft quote</span><h2 id="jobHeading">New project</h2><p id="jobNumbers">Q-0001 · C-0001 · I-0001</p></div><div class="action-row"><button class="secondary" id="duplicateJob">Duplicate</button><button class="danger-ghost" id="deleteJob">Delete quote/job</button><button class="primary" id="saveJob">Save job</button></div></div>
+      <div class="step-tabs" role="tablist">
+        <button class="step active" data-step="1"><span>1</span>Customer</button><button class="step" data-step="2"><span>2</span>Scope & price</button><button class="step" data-step="3"><span>3</span>Schedule</button><button class="step" data-step="4"><span>4</span>Photos</button><button class="step" data-step="5"><span>5</span>Completion</button>
+      </div>
+      <form id="jobForm" autocomplete="off">
+        <div class="form-step active" data-step-panel="1">
+          <div class="form-card"><div class="form-title"><span>01</span><div><h3>Customer and project</h3><p>Information shown on every document.</p></div></div>
+            <div class="form-grid"><label>Customer name<input name="customerName" required placeholder="Full name"></label><label>Phone number<input name="customerPhone" type="tel" placeholder="(513) 555-0123"></label><label>Email address<input name="customerEmail" type="email" placeholder="customer@email.com"></label><label>Project status<select name="status"><option>Draft quote</option><option>Quote sent</option><option>Approved</option><option>In progress</option><option>Completed</option><option>Paid</option></select></label><label class="wide">Billing address<textarea name="billingAddress" rows="2"></textarea></label><label class="wide">Project address<textarea name="projectAddress" rows="2" required></textarea></label></div>
+          </div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Record numbers</h3><p>Automatically assigned and editable.</p></div></div><div class="form-grid three"><label>Quote number<input name="quoteNumber"></label><label>Contract number<input name="contractNumber"></label><label>Invoice number<input name="invoiceNumber"></label></div></div>
+        </div>
+
+        <div class="form-step" data-step-panel="2">
+          <div class="form-card"><div class="form-title"><span>01</span><div><h3>Job description</h3><p>Describe the full result promised to the customer.</p></div></div><label>Overall job description<textarea name="description" rows="6" placeholder="Example: Remove damaged drywall, repair framing as needed, install new drywall, finish seams, prime, and paint the repaired area..."></textarea></label></div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Itemized scope and price</h3><p>Break the work into clear parts.</p></div></div><div class="items-table"><div class="item-header"><span>Done</span><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span><span></span></div><div id="lineItems"></div></div><button type="button" class="add-row" id="addItem">＋ Add line item</button><div class="totals"><div><span>Subtotal</span><strong id="subtotal">$0.00</strong></div><label><span>Tax or other cost</span><input name="tax" type="number" step="0.01" value="0"></label><label><span>Discount</span><input name="discount" type="number" step="0.01" value="0"></label><div class="grand"><span>Total</span><strong id="grandTotal">$0.00</strong></div></div></div>
+          <div class="form-card"><div class="form-title"><span>03</span><div><h3>Materials and cleanup</h3><p>Make responsibility clear before work begins.</p></div></div><div class="choice-grid"><label><input type="radio" name="materials" value="Customer purchases materials"> Customer purchases materials</label><label><input type="radio" name="materials" value="Company purchases; customer reimburses"> Company purchases; customer reimburses</label><label><input type="radio" name="materials" value="Materials included in price"> Materials included in price</label></div><div class="choice-grid"><label><input type="radio" name="cleanup" value="Included as described"> Cleanup included as described</label><label><input type="radio" name="cleanup" value="Not included"> Cleanup not included</label><label><input type="radio" name="cleanup" value="Separately priced"> Cleanup separately priced</label></div></div>
+        </div>
+
+        <div class="form-step" data-step-panel="3">
+          <div class="form-card"><div class="form-title"><span>01</span><div><h3>Schedule and payment</h3><p>Set expectations for timing and money.</p></div></div><div class="form-grid three"><label>Quote created date<input name="quoteDate" type="date"></label><label>Contract approved date<input name="contractDate" type="date"></label><label>Start date<input name="startDate" type="date"></label><label>Estimated completion<input name="completionDate" type="date"></label><label>Quote valid through<input name="validThrough" type="date"></label><label>Deposit<input name="deposit" type="number" step="0.01" value="0"></label><label>Payment due<input name="paymentDue" placeholder="Example: At completion"></label><label>Accepted payment method<select name="paymentMethod"><option value="">Choose later</option><option>Cash App</option><option>Cash</option><option>Card</option><option>Check</option><option>Bank transfer</option></select></label><label>Total work days<input name="workDays" type="number" min="0"></label><label>Permits handled by<input name="permitsBy" placeholder="Company / Customer / N/A"></label><label>Work arrangement<select name="workerType"><option>In-house — Amr Daraghmeh</option><option>In-house company crew</option><option>Freelancer / independent contractor</option><option>Combination of in-house and freelancer</option></select></label></div></div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Worker or freelancer shown to customer</h3><p>Identify who is authorized to perform work. Private compensation is recorded separately below.</p></div></div><div class="form-grid"><label>Legal name<input name="workerName"></label><label>Company<input name="workerCompany"></label><label>Phone or email<input name="workerContact"></label><label>Trade or work assigned<input name="workerTrade"></label><label>License number if required<input name="workerLicense"></label><label>Insurance confirmed<select name="workerInsurance"><option>Not applicable</option><option>Pending</option><option>Yes</option><option>No</option></select></label></div></div>
+          <div class="form-card private-card"><div class="form-title"><span>03</span><div><h3>Private freelancer agreement</h3><p>Internal information. Freelancer compensation never appears on customer documents.</p></div></div><div class="privacy-banner">Private company record — do not provide this page to the customer.</div><div class="form-grid three"><label>Freelancer legal name<input name="freelancerName"></label><label>Freelancer company<input name="freelancerCompany"></label><label>Phone or email<input name="freelancerContact"></label><label>Assigned scope<input name="freelancerScope"></label><label>Amount company pays<input name="freelancerPrice" type="number" min="0" step="0.01" value="0"></label><label>Freelancer payment terms<input name="freelancerPaymentTerms" placeholder="Example: After customer acceptance"></label><label>Freelancer start<input name="freelancerStart" type="date"></label><label>Freelancer completion<input name="freelancerCompletion" type="date"></label><label>W-9 / insurance status<select name="freelancerDocuments"><option>Not collected</option><option>Pending</option><option>Received</option><option>Not applicable</option></select></label></div><div class="private-math"><div><small>Customer contract total</small><strong id="customerContractTotal">$0.00</strong></div><div><small>Freelancer cost</small><strong id="freelancerCostTotal">$0.00</strong></div><div><small>Gross difference before company expenses</small><strong id="grossDifference">$0.00</strong></div></div><p class="privacy-note">Calling someone a freelancer does not determine legal worker classification. Confirm tax, insurance, licensing, and worker-classification requirements for the actual relationship.</p></div>
+        </div>
+
+        <div class="form-step" data-step-panel="4">
+          <div class="form-card"><div class="form-title"><span>01</span><div><h3>Before-work photos</h3><p>Add clear wide and close-up views before starting.</p></div></div><label class="photo-upload"><input id="beforePhotos" type="file" accept="image/*" multiple><span>＋</span><b>Add before photos</b><small>Camera or photo library</small></label><div class="photo-grid" id="beforeGrid"></div></div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>After-work photos</h3><p>Match the before views when possible.</p></div></div><label class="photo-upload"><input id="afterPhotos" type="file" accept="image/*" multiple><span>＋</span><b>Add after photos</b><small>Camera or photo library</small></label><div class="photo-grid" id="afterGrid"></div></div>
+        </div>
+
+        <div class="form-step" data-step-panel="5">
+          <div class="form-card"><div class="form-title"><span>01</span><div><h3>Completion details</h3><p>Information shown on the final work receipt.</p></div></div><label>Detailed description of completed work<textarea name="completedDescription" rows="7"></textarea></label><div class="form-grid three"><label>Labor total<input name="laborTotal" type="number" step="0.01"></label><label>Material total<input name="materialTotal" type="number" step="0.01"></label><label>Other approved cost<input name="otherCost" type="number" step="0.01"></label><label>Payments received<input name="paymentsReceived" type="number" step="0.01" value="0"></label><label>Payment reference or note<input name="paymentReference" placeholder="Cash App confirmation, last 4, or note"></label><label>Payment date<input name="paymentDate" type="date"></label><label>Final receipt date<input name="receiptDate" type="date"></label></div></div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Material receipts</h3><p>Photograph or upload store receipts.</p></div></div><label class="photo-upload"><input id="receiptPhotos" type="file" accept="image/*,.pdf" multiple><span>＋</span><b>Add receipt copies</b><small>Images or PDF files</small></label><div class="photo-grid" id="receiptGrid"></div></div>
+        </div>
+        <div class="form-nav"><button type="button" class="secondary" id="prevStep">Back</button><span id="autosaveState">Saved</span><button type="button" class="primary" id="nextStep">Continue</button></div>
+      </form>
+    </section>
+
+    <section class="view" id="policiesView">
+      <div class="policy-intro"><div><p class="eyebrow">Plain-language overview</p><h2>Business terms and project policies</h2><p>These summaries explain the terms printed with customer documents. The signed document controls, and an Ohio attorney should review the final language before regular use.</p></div><button class="primary" id="printPolicySummary">Print policy summary</button></div>
+      <div class="policy-grid">
+        <article><span>01</span><h3>Written scope controls</h3><p>Only the work, materials, finishes, cleanup, and pricing written in the accepted quote or contract are included. New work needs written approval.</p></article>
+        <article><span>02</span><h3>Materials</h3><p>The customer pays for materials unless the document specifically says they are included. Customer-supplied items must be suitable and available on time.</p></article>
+        <article><span>03</span><h3>Subcontracting</h3><p>Amr and Nhi LLC may use employees, vendors, or qualified subcontractors and remains responsible for duties that cannot legally be transferred.</p></article>
+        <article><span>04</span><h3>Hidden conditions</h3><p>Mold, rot, pests, unsafe wiring, concealed damage, code issues, and similar hidden conditions are outside the original price until documented in a change order.</p></article>
+        <article><span>05</span><h3>Access and belongings</h3><p>The customer provides safe access and protects pets, children, vehicles, valuables, and fragile items. Pre-existing damage should be photographed before work begins.</p></article>
+        <article><span>06</span><h3>Cleanup and debris</h3><p>The immediate work area is left broom-clean unless the scope promises more. Hauling, dumpsters, hazardous materials, and unrelated trash require written pricing.</p></article>
+        <article><span>07</span><h3>60-day workmanship warranty</h3><p>Covered workmanship problems reported in writing within 60 days are inspected and, when covered, corrected. Product defects, abuse, moisture, movement, and third-party work are excluded.</p></article>
+        <article><span>08</span><h3>Schedule and delays</h3><p>Dates are good-faith estimates unless guaranteed in writing. Weather, shortages, inspections, customer changes, unsafe conditions, and events outside reasonable control can extend the schedule.</p></article>
+        <article><span>09</span><h3>Payments</h3><p>Deposits, progress payments, and final payment follow the signed schedule. Customers should identify disputes promptly and pay amounts that are not disputed.</p></article>
+        <article><span>10</span><h3>Photos and privacy</h3><p>Project photos may be used for documentation, estimates, warranties, insurance, and disputes. Public marketing use requires separate permission when identifying details are visible.</p></article>
+        <article><span>11</span><h3>Damage and liability</h3><p>The company does not accept responsibility for unrelated or pre-existing conditions. The terms do not attempt to excuse negligence, willful misconduct, or duties that Ohio law does not allow a business to limit.</p></article>
+        <article><span>12</span><h3>Ohio cancellation rights</h3><p>Certain sales made at a customer’s residence may carry a three-business-day cancellation right and special notice requirements. Use the required notice when applicable.</p></article>
+      </div>
+      <div class="legal-review-note"><strong>Important:</strong> This app organizes business documents; it does not determine licensing, permit, insurance, tax, or cancellation requirements for a particular job.</div>
+    </section>
+
+    <section class="view" id="documentsView">
+      <div class="documents-head"><div><p class="eyebrow">Print center</p><h2>Project documents</h2><p>Select a saved job, then print or save it as a PDF.</p></div><select id="documentJobSelect" aria-label="Select job"></select></div>
+      <div class="document-cards">
+        <article><span class="doc-number">01</span><div><small>Pre-work stage · Four pages</small><h3>Project Quote</h3><p>Cover, scope, itemized customer price, terms, and before-work photos.</p></div><button class="primary print-doc" data-doc="quote">Print quote</button></article>
+        <article><span class="doc-number">02</span><div><small>Approved quote stage · Four pages</small><h3>Customer Contract</h3><p>Cover, approved work, legal terms, and worker authorization.</p></div><button class="primary print-doc" data-doc="contract">Print contract</button></article>
+        <article><span class="doc-number">03</span><div><small>Completed work stage · Five pages</small><h3>Final Receipt</h3><p>Cover, completed work, warranty terms, after photos, and material receipts.</p></div><button class="primary print-doc" data-doc="receipt">Print receipt</button></article>
+        <article class="private-document"><span class="doc-number">04</span><div><small>Private company document</small><h3>Freelancer Agreement</h3><p>Assigned scope and private freelancer compensation. Never give this document to the customer.</p></div><button class="primary print-doc" data-doc="freelancer">Print private agreement</button></article>
+      </div>
+      <div class="panel document-preview"><div class="panel-head"><div><p class="eyebrow">Selected project</p><h2 id="previewJobName">No job selected</h2></div><span class="pill" id="previewJobStatus">—</span></div><div id="previewSummary" class="preview-summary"></div></div>
+    </section>
+
+    <section class="view" id="settingsView">
+      <div class="settings-grid">
+        <div class="form-card"><div class="form-title"><span>01</span><div><h3>Company information</h3><p>Printed on every customer document.</p></div></div><div class="form-grid"><label>Operating name<input id="settingBusiness" value="Niko Residential Holdings"></label><label>Legal company<input id="settingLegal" value="Amr and Nhi LLC"></label><label>Phone<input id="settingPhone" value="543-212-5883"></label><label>Email<input id="settingEmail" value="daraghmehamr1@gmail.com"></label><label class="wide">Business address<textarea id="settingAddress" rows="2" placeholder="Add before using contracts over applicable thresholds"></textarea></label></div><button class="primary" id="saveSettings">Save company information</button></div>
+        <div class="form-card"><div class="form-title"><span>02</span><div><h3>Cloud and backups</h3><p>Your signed-in account syncs records through Supabase while a local copy stays on this device.</p></div></div><div class="cloud-summary"><span class="status-dot"></span><div><strong id="settingsCloudTitle">Cloud connection ready</strong><small id="settingsCloudDetail">Waiting for sign-in</small></div></div><div class="backup-actions"><button class="secondary" id="syncNow">Sync now</button><button class="secondary" id="exportData">Download backup</button><label class="secondary file-button">Restore backup<input id="importData" type="file" accept="application/json"></label></div><p class="privacy-note"><strong>Keep backups:</strong> Download a backup after major projects even when cloud sync is active.</p></div>
+        <div class="form-card danger-card"><div class="form-title"><span>!</span><div><h3>Reset application</h3><p>Permanently erase every saved job, photo, and setting from this account and device.</p></div></div><button class="danger" id="resetApp">Erase all account data</button></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="printArea" aria-hidden="true"></div>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
