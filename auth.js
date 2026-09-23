@@ -158,9 +158,7 @@
     const localTime = Number(state.cloudUpdatedAt || 0);
     if (remoteTime >= localTime || !state.jobs?.length) {
       state = remoteState;
-      state.jobs = Array.isArray(state.jobs) ? state.jobs : [];
-      state.settings = state.settings || {};
-      state.counter = Number(state.counter || 1);
+      migrateState();
       state.cloudUpdatedAt = remoteTime;
       setCloudStatus('Loading project files…', 'Downloading private photos and receipt copies', true);
       await downloadCloudFiles(state);
@@ -183,9 +181,10 @@
         settings: {
           business: 'Niko Residential Holdings',
           legal: 'Amr and Nhi LLC',
-          phone: '543-212-5883',
+          phone: '513-212-5883',
           email: 'daraghmehamr1@gmail.com',
-          address: ''
+          address: '',
+          website: 'https://nikoresidentialholdings.com'
         },
         counter: 1,
         currentId: null

@@ -57,6 +57,9 @@
       await getSession();
       const { data, error } = await client.from('niko_quote_requests').select('*').order('created_at', { ascending: false });
       if (error) throw error;
+      const openCount=(data||[]).filter((lead)=>!['Converted to job','Closed'].includes(lead.status)).length;
+      if(byId('statLeads'))byId('statLeads').textContent=String(openCount);
+      document.querySelector('[data-view="leads"]')?.classList.toggle('has-alert',openCount>0);
       list.replaceChildren();
       if (!data?.length) return list.append(empty('No website quote requests yet.'));
       for (const lead of data) list.append(await leadCard(lead));
@@ -309,6 +312,7 @@
   byId('refreshLeads')?.addEventListener('click', loadLeads);
   byId('refreshPublicProjects')?.addEventListener('click', loadPublishedProjects);
   window.nikoAppReady?.then(() => {
-    migrateState(); refreshJobSelects(); renderAppointments(); fillPublishForm();
+    migrateState(); refreshJobSelects(); renderAppointments(); fillPublishForm(); loadLeads();
+    setInterval(()=>{if(!document.hidden)loadLeads()},60000);
   });
 })();

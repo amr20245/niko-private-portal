@@ -10,6 +10,7 @@
   <link rel="icon" type="image/png" href="assets/app-icon-192.png">
   <link rel="apple-touch-icon" href="assets/app-icon-192.png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="enhancements.css">
 </head>
 <body>
   <section class="auth-shell" id="authShell" aria-labelledby="loginTitle">
@@ -46,6 +47,11 @@
     <nav aria-label="Main navigation">
       <button class="nav-btn active" data-view="dashboard"><span>⌂</span>Dashboard</button>
       <button class="nav-btn" data-view="editor"><span>＋</span>Job workspace</button>
+      <button class="nav-btn" data-view="leads"><span>✉</span>Quote requests</button>
+      <button class="nav-btn" data-view="completed"><span>✓</span>Completed work</button>
+      <button class="nav-btn" data-view="customers"><span>♙</span>Customers</button>
+      <button class="nav-btn" data-view="schedule"><span>□</span>Schedule</button>
+      <button class="nav-btn" data-view="publicProjects"><span>◎</span>Public projects</button>
       <button class="nav-btn" data-view="documents"><span>▤</span>Documents</button>
       <button class="nav-btn" data-view="policies"><span>§</span>Policies</button>
       <button class="nav-btn" data-view="settings"><span>⚙</span>Settings</button>
@@ -71,6 +77,9 @@
         <article><small>Open projects</small><strong id="statOpen">0</strong><span>Quote or active</span></article>
         <article><small>Quoted value</small><strong id="statValue">$0</strong><span>Before payments</span></article>
         <article><small>Outstanding</small><strong id="statDue">$0</strong><span>Remaining balance</span></article>
+        <article><small>Completed revenue</small><strong id="statCompletedRevenue">$0</strong><span>Completed and paid jobs</span></article>
+        <article><small>Money collected</small><strong id="statCollected">$0</strong><span>Recorded customer payments</span></article>
+        <article><small>New quote requests</small><strong id="statLeads">0</strong><span>From the public website</span></article>
       </div>
       <div class="panel jobs-panel">
         <div class="panel-head"><div><p class="eyebrow">Project records</p><h2>Recent jobs</h2></div><label class="search"><span>⌕</span><input id="jobSearch" type="search" placeholder="Search customer, address, or number"></label></div>
@@ -94,7 +103,7 @@
 
         <div class="form-step" data-step-panel="2">
           <div class="form-card"><div class="form-title"><span>01</span><div><h3>Job description</h3><p>Describe the full result promised to the customer.</p></div></div><label>Overall job description<textarea name="description" rows="6" placeholder="Example: Remove damaged drywall, repair framing as needed, install new drywall, finish seams, prime, and paint the repaired area..."></textarea></label></div>
-          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Itemized scope and price</h3><p>Break the work into clear parts.</p></div></div><div class="items-table"><div class="item-header"><span>Done</span><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span><span></span></div><div id="lineItems"></div></div><button type="button" class="add-row" id="addItem">＋ Add line item</button><div class="totals"><div><span>Subtotal</span><strong id="subtotal">$0.00</strong></div><label><span>Tax or other cost</span><input name="tax" type="number" step="0.01" value="0"></label><label><span>Discount</span><input name="discount" type="number" step="0.01" value="0"></label><div class="grand"><span>Total</span><strong id="grandTotal">$0.00</strong></div></div></div>
+          <div class="form-card"><div class="form-title"><span>02</span><div><h3>Itemized scope and price</h3><p>Classify every charge as labor or material so the final receipt stays clear.</p></div></div><div class="items-table"><div class="item-header categorized"><span>Done</span><span>Type</span><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span><span></span></div><div id="lineItems"></div></div><button type="button" class="add-row" id="addItem">＋ Add line item</button><div class="totals"><div><span>Labor subtotal</span><strong id="laborSubtotal">$0.00</strong></div><div><span>Material subtotal</span><strong id="materialSubtotal">$0.00</strong></div><div><span>Subtotal</span><strong id="subtotal">$0.00</strong></div><label><span>Tax or other cost</span><input name="tax" type="number" step="0.01" value="0"></label><label><span>Discount</span><input name="discount" type="number" step="0.01" value="0"></label><div class="grand"><span>Total</span><strong id="grandTotal">$0.00</strong></div></div></div>
           <div class="form-card"><div class="form-title"><span>03</span><div><h3>Materials and cleanup</h3><p>Make responsibility clear before work begins.</p></div></div><div class="choice-grid"><label><input type="radio" name="materials" value="Customer purchases materials"> Customer purchases materials</label><label><input type="radio" name="materials" value="Company purchases; customer reimburses"> Company purchases; customer reimburses</label><label><input type="radio" name="materials" value="Materials included in price"> Materials included in price</label></div><div class="choice-grid"><label><input type="radio" name="cleanup" value="Included as described"> Cleanup included as described</label><label><input type="radio" name="cleanup" value="Not included"> Cleanup not included</label><label><input type="radio" name="cleanup" value="Separately priced"> Cleanup separately priced</label></div></div>
         </div>
 
@@ -105,6 +114,7 @@
         </div>
 
         <div class="form-step" data-step-panel="4">
+          <div class="form-card"><div class="form-title"><span>00</span><div><h3>Customer photo permission</h3><p>Choose the signed customer decision before publishing any project image.</p></div></div><div class="choice-grid photo-permission"><label><input type="radio" name="photoUsePermission" value="Documentation only"> Documentation only</label><label><input type="radio" name="photoUsePermission" value="Public non-identifying use approved"> Public non-identifying use approved</label><label><input type="radio" name="photoUsePermission" value="Public use declined"> Public use declined</label></div><p class="privacy-note">Project documentation may be used for estimating, safety, warranty, insurance, payment, and disputes. Public website or marketing use requires written approval. Never publish faces, children, exact addresses, documents, keys, access codes, license plates, valuables, or security details.</p></div>
           <div class="form-card"><div class="form-title"><span>01</span><div><h3>Before-work photos</h3><p>Add clear wide and close-up views before starting.</p></div></div><label class="photo-upload"><input id="beforePhotos" type="file" accept="image/*" multiple><span>＋</span><b>Add before photos</b><small>Camera or photo library</small></label><div class="photo-grid" id="beforeGrid"></div></div>
           <div class="form-card"><div class="form-title"><span>02</span><div><h3>After-work photos</h3><p>Match the before views when possible.</p></div></div><label class="photo-upload"><input id="afterPhotos" type="file" accept="image/*" multiple><span>＋</span><b>Add after photos</b><small>Camera or photo library</small></label><div class="photo-grid" id="afterGrid"></div></div>
         </div>
@@ -115,6 +125,49 @@
         </div>
         <div class="form-nav"><button type="button" class="secondary" id="prevStep">Back</button><span id="autosaveState">Saved</span><button type="button" class="primary" id="nextStep">Continue</button></div>
       </form>
+    </section>
+
+    <section class="view" id="leadsView">
+      <div class="workspace-head"><div><p class="eyebrow">Website intake</p><h2>Quote requests</h2><p>Private requests and optional photos submitted from nikoresidentialholdings.com.</p></div><button class="secondary" id="refreshLeads">Refresh</button></div>
+      <div id="leadNotice" class="legal-review-note">Connect Supabase and run the updated setup SQL to receive website requests.</div>
+      <div id="leadList" class="portal-list"></div>
+    </section>
+
+    <section class="view" id="completedView">
+      <div class="workspace-head"><div><p class="eyebrow">Finished projects</p><h2>Completed work</h2><p>Jobs marked Completed or Paid appear here with customer charges and payments.</p></div></div>
+      <div class="stats"><article><small>Completed jobs</small><strong id="completedCount">0</strong></article><article><small>Completed revenue</small><strong id="completedRevenue">$0</strong></article><article><small>Collected</small><strong id="completedCollected">$0</strong></article><article><small>Still due</small><strong id="completedDue">$0</strong></article></div>
+      <div id="completedList" class="portal-list"></div>
+    </section>
+
+    <section class="view" id="customersView">
+      <div class="workspace-head"><div><p class="eyebrow">Customer history</p><h2>Customers</h2><p>Each customer is grouped with every quote, active project, and completed job.</p></div></div>
+      <label class="search customer-search"><span>⌕</span><input id="customerSearch" type="search" placeholder="Search name, phone, email, or address"></label>
+      <div id="customerList" class="portal-list"></div>
+    </section>
+
+    <section class="view" id="scheduleView">
+      <div class="workspace-head"><div><p class="eyebrow">Appointments</p><h2>Schedule visits and work</h2><p>Create an appointment, then copy a customer calendar link or download an ICS file.</p></div></div>
+      <div class="portal-two-column">
+        <form id="appointmentForm" class="form-card"><div class="form-title"><span>＋</span><div><h3>New appointment</h3><p>Do not put lockbox codes, alarm codes, or private access details in link notes.</p></div></div><div class="form-grid">
+          <label>Project<select id="appointmentJob" required></select></label><label>Appointment type<select id="appointmentType"><option>Estimate visit</option><option>Work appointment</option><option>Follow-up</option><option>Final walkthrough</option></select></label>
+          <label>Start date and time<input id="appointmentStart" type="datetime-local" required></label><label>End date and time<input id="appointmentEnd" type="datetime-local" required></label>
+          <label class="wide">Location<input id="appointmentLocation" placeholder="Project address or meeting location"></label><label class="wide">Customer-safe notes<textarea id="appointmentNotes" rows="3" placeholder="Purpose, parking note, or what to prepare"></textarea></label>
+        </div><button class="primary" type="submit">Save appointment</button></form>
+        <div><div class="panel-head"><div><p class="eyebrow">Upcoming</p><h2>Saved appointments</h2></div></div><div id="appointmentList" class="portal-list"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="publicProjectsView">
+      <div class="workspace-head"><div><p class="eyebrow">Customer-approved gallery</p><h2>Publish a job to the public website</h2><p>Only selected photos and the public text below are uploaded. Customer contact details, exact address, documents, and pricing stay private.</p></div><button class="secondary" id="refreshPublicProjects">Refresh published list</button></div>
+      <div class="portal-two-column">
+        <form id="publishProjectForm" class="form-card"><div class="form-title"><span>◎</span><div><h3>Public project details</h3><p>The selected job must have written public non-identifying photo approval.</p></div></div><div class="form-grid">
+          <label class="wide">Choose job<select id="publishJob" required></select></label><label>Public title<input id="publishTitle" maxlength="120" required placeholder="Kitchen refresh"></label><label>Service category<input id="publishCategory" maxlength="80" placeholder="Kitchen remodeling"></label>
+          <label>Area label<input id="publishArea" maxlength="80" placeholder="Greater Cincinnati"></label><label>Completion date<input id="publishCompleted" type="date"></label><label class="wide">Public summary<textarea id="publishSummary" rows="4" maxlength="1000" required></textarea></label>
+          <div class="wide"><strong>Choose before photos</strong><div id="publishBeforePhotos" class="publish-photo-grid"></div></div><div class="wide"><strong>Choose after photos</strong><div id="publishAfterPhotos" class="publish-photo-grid"></div></div>
+          <label class="wide confirmation"><input id="publishConfirm" type="checkbox" required> I confirmed the customer signed public non-identifying use approval, and I checked every selected photo for faces, children, exact addresses, mail, documents, license plates, access codes, keys, valuables, and security details.</label>
+        </div><button class="primary" id="publishProject" type="submit">Publish or update project</button></form>
+        <div><div class="panel-head"><div><p class="eyebrow">Live website</p><h2>Published projects</h2></div></div><div id="publishedProjectList" class="portal-list"></div></div>
+      </div>
     </section>
 
     <section class="view" id="policiesView">
@@ -129,7 +182,7 @@
         <article><span>07</span><h3>60-day workmanship warranty</h3><p>Covered workmanship problems reported in writing within 60 days are inspected and, when covered, corrected. Product defects, abuse, moisture, movement, and third-party work are excluded.</p></article>
         <article><span>08</span><h3>Schedule and delays</h3><p>Dates are good-faith estimates unless guaranteed in writing. Weather, shortages, inspections, customer changes, unsafe conditions, and events outside reasonable control can extend the schedule.</p></article>
         <article><span>09</span><h3>Payments</h3><p>Deposits, progress payments, and final payment follow the signed schedule. Customers should identify disputes promptly and pay amounts that are not disputed.</p></article>
-        <article><span>10</span><h3>Photos and privacy</h3><p>Project photos may be used for documentation, estimates, warranties, insurance, and disputes. Public marketing use requires separate permission when identifying details are visible.</p></article>
+        <article><span>10</span><h3>Photos and privacy</h3><p>Relevant project photos may be used for estimates, safety, documentation, warranty, insurance, payment, and disputes. Public use requires the customer’s separate written approval and removal of identifying or sensitive details.</p></article>
         <article><span>11</span><h3>Damage and liability</h3><p>The company does not accept responsibility for unrelated or pre-existing conditions. The terms do not attempt to excuse negligence, willful misconduct, or duties that Ohio law does not allow a business to limit.</p></article>
         <article><span>12</span><h3>Ohio cancellation rights</h3><p>Certain sales made at a customer’s residence may carry a three-business-day cancellation right and special notice requirements. Use the required notice when applicable.</p></article>
       </div>
@@ -149,7 +202,7 @@
 
     <section class="view" id="settingsView">
       <div class="settings-grid">
-        <div class="form-card"><div class="form-title"><span>01</span><div><h3>Company information</h3><p>Printed on every customer document.</p></div></div><div class="form-grid"><label>Operating name<input id="settingBusiness" value="Niko Residential Holdings"></label><label>Legal company<input id="settingLegal" value="Amr and Nhi LLC"></label><label>Phone<input id="settingPhone" value="543-212-5883"></label><label>Email<input id="settingEmail" value="daraghmehamr1@gmail.com"></label><label class="wide">Business address<textarea id="settingAddress" rows="2" placeholder="Add before using contracts over applicable thresholds"></textarea></label></div><button class="primary" id="saveSettings">Save company information</button></div>
+        <div class="form-card"><div class="form-title"><span>01</span><div><h3>Company information</h3><p>Printed on every customer document and used for customer calendar links.</p></div></div><div class="form-grid"><label>Operating name<input id="settingBusiness" value="Niko Residential Holdings"></label><label>Legal company<input id="settingLegal" value="Amr and Nhi LLC"></label><label>Phone<input id="settingPhone" value="513-212-5883"></label><label>Email<input id="settingEmail" value="daraghmehamr1@gmail.com"></label><label>Public website<input id="settingWebsite" type="url" value="https://nikoresidentialholdings.com"></label><label class="wide">Business address<textarea id="settingAddress" rows="2" placeholder="Add before using contracts over applicable thresholds"></textarea></label></div><button class="primary" id="saveSettings">Save company information</button></div>
         <div class="form-card"><div class="form-title"><span>02</span><div><h3>Cloud and backups</h3><p>Your signed-in account syncs records through Supabase while a local copy stays on this device.</p></div></div><div class="cloud-summary"><span class="status-dot"></span><div><strong id="settingsCloudTitle">Cloud connection ready</strong><small id="settingsCloudDetail">Waiting for sign-in</small></div></div><div class="backup-actions"><button class="secondary" id="syncNow">Sync now</button><button class="secondary" id="exportData">Download backup</button><label class="secondary file-button">Restore backup<input id="importData" type="file" accept="application/json"></label></div><p class="privacy-note"><strong>Keep backups:</strong> Download a backup after major projects even when cloud sync is active.</p></div>
         <div class="form-card danger-card"><div class="form-title"><span>!</span><div><h3>Reset application</h3><p>Permanently erase every saved job, photo, and setting from this account and device.</p></div></div><button class="danger" id="resetApp">Erase all account data</button></div>
       </div>
@@ -162,5 +215,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
   <script src="auth.js"></script>
+  <script src="portal.js"></script>
 </body>
 </html>
