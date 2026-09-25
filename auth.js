@@ -4,10 +4,7 @@
   const loginForm = document.querySelector('#loginForm');
   const emailInput = document.querySelector('#loginEmail');
   const passwordInput = document.querySelector('#loginPassword');
-  const updatePasswordForm = document.querySelector('#updatePasswordForm');
-  const newPasswordInput = document.querySelector('#newPassword');
   const message = document.querySelector('#authMessage');
-  const warning = document.querySelector('#connectionWarning');
   const signOutButton = document.querySelector('#signOutButton');
   const syncButton = document.querySelector('#syncNow');
   const configured = /^https:\/\/.+\.supabase\.co$/i.test(config.supabaseUrl || '') &&
@@ -16,7 +13,6 @@
   let currentUser = null;
   let syncing = false;
   let syncTimer = null;
-  let recoveringPassword = /(?:[?#&])type=recovery(?:[&#]|$)/i.test(location.href);
   const localPersist = persist;
 
   function setMessage(text, good = false) {
@@ -209,25 +205,15 @@
 
   async function initialize() {
     if (!configured || !window.supabase?.createClient) {
-      warning.hidden = false;
       loginForm.querySelector('button').disabled = true;
-      setMessage('Add your Project URL and publishable key to config.js, then upload the files again.');
-      setCloudStatus('Setup required', 'Supabase is not connected yet', false);
+      setMessage('System connection unavailable. Contact tech support at 513-212-5883.');
+      setCloudStatus('Connection unavailable', 'Contact tech support at 513-212-5883', false);
       return;
     }
     cloud = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
     cloud.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        recoveringPassword = true;
-        authShell.classList.remove('hidden');
-        loginForm.hidden = true;
-        document.querySelector('#forgotPassword').hidden = true;
-        updatePasswordForm.hidden = false;
-        document.querySelector('#loginTitle').textContent = 'Choose a new password';
-        setMessage('Use at least 12 characters.', true);
-      }
       if (event === 'SIGNED_OUT') {
         currentUser = null;
         authShell.classList.remove('hidden');
@@ -235,16 +221,9 @@
         setCloudStatus('Signed out', 'Sign in to reach cloud records', false);
       }
     });
-    if (recoveringPassword) {
-      loginForm.hidden = true;
-      document.querySelector('#forgotPassword').hidden = true;
-      updatePasswordForm.hidden = false;
-      document.querySelector('#loginTitle').textContent = 'Choose a new password';
-      setMessage('Use at least 12 characters.', true);
-    }
     const { data, error } = await cloud.auth.getSession();
     if (error) setMessage(error.message);
-    if (data?.session && !recoveringPassword) await openApp(data.session);
+    if (data?.session) await openApp(data.session);
   }
 
   loginForm.addEventListener('submit', async (event) => {
@@ -264,28 +243,13 @@
     await openApp(data.session);
   });
 
-  document.querySelector('#forgotPassword').addEventListener('click', async () => {
-    if (!cloud) return;
-    const email = emailInput.value.trim();
-    if (!email) return setMessage('Enter your email address first.');
-    const { error } = await cloud.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
-    if (error) return setMessage(error.message);
-    setMessage('Password reset email sent.', true);
-  });
-
-  updatePasswordForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    if (!cloud || newPasswordInput.value.length < 12) return setMessage('Use a password with at least 12 characters.');
-    const { error } = await cloud.auth.updateUser({ password: newPasswordInput.value });
-    if (error) return setMessage(error.message);
-    recoveringPassword = false;
-    updatePasswordForm.hidden = true;
-    loginForm.hidden = false;
-    document.querySelector('#forgotPassword').hidden = false;
-    document.querySelector('#loginTitle').textContent = 'Welcome back';
-    setMessage('Password updated. You can continue securely.', true);
-    const { data } = await cloud.auth.getSession();
-    if (data?.session) await openApp(data.session);
+  const supportDialog = document.querySelector('#techSupportDialog');
+  document.querySelector('#forgotPassword')?.addEventListener('click', () => {
+    if (supportDialog?.showModal) {
+      supportDialog.showModal();
+      return;
+    }
+    alert('Contact tech support: 513-212-5883');
   });
 
   signOutButton.addEventListener('click', async () => {

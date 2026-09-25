@@ -26,21 +26,27 @@
       <p class="eyebrow">Private business system</p>
       <h2 id="loginTitle">Welcome back</h2>
       <p class="auth-copy">Sign in with the owner account created in Supabase.</p>
-      <div class="connection-warning" id="connectionWarning" hidden><strong>Finish Supabase setup first.</strong><span>Open <code>config.js</code> and add the project URL and publishable key.</span></div>
       <form id="loginForm">
         <label>Email address<input id="loginEmail" type="email" inputmode="email" autocomplete="username" required placeholder="you@email.com"></label>
         <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password"></label>
         <button class="primary auth-submit" type="submit">Sign in securely</button>
       </form>
-      <form id="updatePasswordForm" hidden>
-        <label>New password<input id="newPassword" type="password" autocomplete="new-password" minlength="12" required placeholder="At least 12 characters"></label>
-        <button class="primary auth-submit" type="submit">Update password</button>
-      </form>
-      <button class="text-button" id="forgotPassword" type="button">Send password reset email</button>
+      <button class="text-button support-link" id="forgotPassword" type="button">Change password</button>
       <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
       <small class="auth-security">Private customer data is protected by Supabase authentication and row-level security after setup.</small>
     </div>
   </section>
+
+  <dialog id="techSupportDialog" class="support-dialog" aria-labelledby="supportTitle">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="Close">×</button>
+      <p class="eyebrow">Account help</p>
+      <h2 id="supportTitle">Contact tech support</h2>
+      <p>For password changes or account access, contact tech support.</p>
+      <a class="primary support-phone" href="tel:5132125883">513-212-5883</a>
+      <button class="secondary" value="cancel">Close</button>
+    </form>
+  </dialog>
 
   <aside class="sidebar">
     <div class="brand-mark"><img class="brand-logo" src="assets/niko-logo.png" alt=""><div><strong>Niko</strong><small>Project Manager</small></div></div>
@@ -162,7 +168,8 @@
       <div class="portal-two-column">
         <form id="publishProjectForm" class="form-card"><div class="form-title"><span>◎</span><div><h3>Public project details</h3><p>The selected job must have written public non-identifying photo approval.</p></div></div><div class="form-grid">
           <label class="wide">Choose job<select id="publishJob" required></select></label><label>Public title<input id="publishTitle" maxlength="120" required placeholder="Kitchen refresh"></label><label>Service category<input id="publishCategory" maxlength="80" placeholder="Kitchen remodeling"></label>
-          <label>Area label<input id="publishArea" maxlength="80" placeholder="Greater Cincinnati"></label><label>Completion date<input id="publishCompleted" type="date"></label><label class="wide">Public summary<textarea id="publishSummary" rows="4" maxlength="1000" required></textarea></label>
+          <label>Area label<input id="publishArea" maxlength="80" placeholder="Greater Cincinnati"></label><label>Completion date<input id="publishCompleted" type="date"></label><label class="wide">New public post description<textarea id="publishSummary" rows="6" maxlength="1000" required placeholder="Write the exact description customers will see on the public website."></textarea><small>You can replace the job description with a cleaner marketing description before publishing.</small></label>
+          <div class="wide publish-description-actions"><button class="secondary" id="clearPublishSummary" type="button">Clear and write a new description</button></div>
           <div class="wide"><strong>Choose before photos</strong><div id="publishBeforePhotos" class="publish-photo-grid"></div></div><div class="wide"><strong>Choose after photos</strong><div id="publishAfterPhotos" class="publish-photo-grid"></div></div>
           <label class="wide confirmation"><input id="publishConfirm" type="checkbox" required> I confirmed the customer signed public non-identifying use approval, and I checked every selected photo for faces, children, exact addresses, mail, documents, license plates, access codes, keys, valuables, and security details.</label>
         </div><button class="primary" id="publishProject" type="submit">Publish or update project</button></form>

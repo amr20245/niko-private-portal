@@ -237,6 +237,11 @@
     if (job && job.photoUsePermission !== 'Public non-identifying use approved') toast('This job does not have public photo approval');
   }
   byId('publishJob')?.addEventListener('change', fillPublishForm);
+  byId('clearPublishSummary')?.addEventListener('click', () => {
+    byId('publishSummary').value = '';
+    byId('publishSummary').focus();
+    toast('Write the new public description');
+  });
 
   async function photoBlob(job, photo) {
     if (photo.data) return fetch(photo.data).then((response) => response.blob());
