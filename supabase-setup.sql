@@ -306,3 +306,111 @@ using (
   bucket_id = 'niko-public-portfolio'
   and (storage.foldername(name))[1] = (select auth.uid()::text)
 );
+
+-- Secure customer contract links and electronic signatures.
+-- The public site never receives direct table access. It can only call the
+-- two functions below with the random link token plus matching customer data.
+create extension if not exists pgcrypto;
+
+create table if not exists public.niko_signature_requests (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  job_id uuid not null,
+  access_token_hash text not null unique check (char_length(access_token_hash) = 64),
+  customer_name text not null,
+  customer_phone_last4 text not null check (customer_phone_last4 ~ '^[0-9]{4}$'),
+  quote_number text not null,
+  document_type text not null default 'contract' check (document_type in ('quote','contract','receipt')),
+  document_snapshot jsonb not null,
+  expires_at timestamptz not null,
+  opened_at timestamptz,
+  signed_at timestamptz,
+  signer_name text,
+  signature_data_url text,
+  signer_acknowledged boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.niko_signature_requests enable row level security;
+revoke all on table public.niko_signature_requests from anon, authenticated;
+grant select, insert, update, delete on table public.niko_signature_requests to authenticated;
+
+drop policy if exists "Owners manage their signature requests" on public.niko_signature_requests;
+create policy "Owners manage their signature requests"
+on public.niko_signature_requests for all
+to authenticated
+using ((select auth.uid()) = owner_id)
+with check ((select auth.uid()) = owner_id);
+
+create or replace function public.niko_open_signature_request(
+  p_token text,
+  p_customer_name text,
+  p_phone_last4 text,
+  p_quote_number text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare request_row public.niko_signature_requests%rowtype;
+begin
+  select * into request_row
+  from public.niko_signature_requests
+  where access_token_hash = encode(digest(p_token, 'sha256'), 'hex')
+    and lower(trim(customer_name)) = lower(trim(p_customer_name))
+    and customer_phone_last4 = regexp_replace(p_phone_last4, '[^0-9]', '', 'g')
+    and upper(trim(quote_number)) = upper(trim(p_quote_number))
+    and expires_at > now();
+  if not found then return null; end if;
+  update public.niko_signature_requests set opened_at = coalesce(opened_at, now()) where id = request_row.id;
+  return jsonb_build_object(
+    'id', request_row.id,
+    'documentType', request_row.document_type,
+    'document', request_row.document_snapshot,
+    'expiresAt', request_row.expires_at,
+    'signedAt', request_row.signed_at,
+    'signerName', request_row.signer_name
+  );
+end;
+$$;
+
+create or replace function public.niko_submit_signature(
+  p_token text,
+  p_customer_name text,
+  p_phone_last4 text,
+  p_quote_number text,
+  p_signer_name text,
+  p_signature_data_url text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare request_id uuid;
+begin
+  if char_length(trim(p_signer_name)) < 2 or char_length(p_signature_data_url) > 250000 or p_signature_data_url not like 'data:image/png;base64,%' then
+    raise exception 'Invalid signature information';
+  end if;
+  select id into request_id
+  from public.niko_signature_requests
+  where access_token_hash = encode(digest(p_token, 'sha256'), 'hex')
+    and lower(trim(customer_name)) = lower(trim(p_customer_name))
+    and customer_phone_last4 = regexp_replace(p_phone_last4, '[^0-9]', '', 'g')
+    and upper(trim(quote_number)) = upper(trim(p_quote_number))
+    and expires_at > now()
+    and signed_at is null;
+  if request_id is null then return null; end if;
+  update public.niko_signature_requests
+  set signer_name = trim(p_signer_name), signature_data_url = p_signature_data_url,
+      signer_acknowledged = true, signed_at = now()
+  where id = request_id;
+  return jsonb_build_object('id', request_id, 'signedAt', now());
+end;
+$$;
+
+revoke all on function public.niko_open_signature_request(text,text,text,text) from public;
+revoke all on function public.niko_submit_signature(text,text,text,text,text,text) from public;
+grant execute on function public.niko_open_signature_request(text,text,text,text) to anon, authenticated;
+grant execute on function public.niko_submit_signature(text,text,text,text,text,text) to anon, authenticated;
