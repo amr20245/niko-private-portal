@@ -204,14 +204,9 @@
     }).join('');
   };
 
-  coverPage = function coverPageWithContractSignature(stage, title, number, date, job, totalPages, privateDocument = false) {
-    let html = originalCoverPage(stage, title, number, date, job, totalPages, privateDocument);
-    if (title === 'Customer Contract') {
-      const block = `<div class="cover-signatures"><div><span></span><small>Customer signature · Date</small></div><div><span></span><small>${esc(state.settings.legal)} representative · Date</small></div></div>`;
-      html = html.replace('<div class="cover-bottom">', `${block}<div class="cover-bottom">`);
-    }
-    return html;
-  };
+  // Keep one customer-signature section on the contract agreement page,
+  // rather than duplicating signatures on the cover and attachments.
+  coverPage = originalCoverPage;
 
   function blankDocument(type) {
     const job = blankJob();
@@ -225,21 +220,13 @@
     job.items = Array.from({ length: 6 }, () => ({ id: crypto.randomUUID(), done: false, category: 'Labor', description: '', qty: '', rate: '' }));
     job.freelancerName = '____________________________';
     originalPrintDocument(type, job);
-    if (type === 'contract') removeRepeatedContractSignatures();
     $('#printArea').classList.add('print-monochrome');
-  }
-
-  function removeRepeatedContractSignatures() {
-    $$('#printArea .signature-grid').forEach((grid) => {
-      if (grid.textContent.includes('Customer signature')) grid.remove();
-    });
   }
 
   function printSaved(type, job, mode = 'standard') {
     if (!job) return toast('Choose a saved job first');
     originalPrintDocument(type, job);
     const printArea = $('#printArea');
-    if (type === 'contract') removeRepeatedContractSignatures();
     printArea.classList.toggle('print-monochrome', mode === 'black-white' || type === 'quote' || type === 'contract');
     if (mode === 'receipt-pair') {
       const colorCopy = printArea.innerHTML;
