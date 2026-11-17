@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="title desc">
+<title id="title">Niko Residential Holdings gold logo</title>
+<desc id="desc">Gold house roof above NIKO in elegant serif lettering, with Residential Holdings below</desc>
+<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5742e"/><stop offset=".27" stop-color="#f7dfa3"/><stop offset=".58" stop-color="#d6a34e"/><stop offset="1" stop-color="#9e6d25"/></linearGradient></defs>
+<g fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round"><path d="M115 263L498 51 885 263" stroke-width="28"/><path d="M713 169V103h54v95" stroke-width="21"/><path d="M140 263H95M867 263h42" stroke-width="8"/></g>
+<g fill="url(#gold)"><rect x="472" y="148" width="23" height="23"/><rect x="507" y="148" width="23" height="23"/><rect x="472" y="183" width="23" height="23"/><rect x="507" y="183" width="23" height="23"/></g>
+<text x="500" y="437" font-family="Georgia, 'Times New Roman', serif" font-size="235" font-weight="400" letter-spacing="2" fill="url(#gold)" text-anchor="middle">NIKO</text>
+<path d="M94 498h122M785 498h122" stroke="url(#gold)" stroke-width="6"/>
+<text x="500" y="517" font-family="Arial, Helvetica, sans-serif" font-size="35" letter-spacing="10" fill="#b88d49" text-anchor="middle">RESIDENTIAL HOLDINGS</text>
+</svg>

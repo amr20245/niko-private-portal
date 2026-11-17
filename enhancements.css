@@ -17,3 +17,74 @@
 .field-help{color:var(--muted);font-weight:600;line-height:1.35}.workflow-board{display:grid;gap:14px;margin-top:20px}.workflow-group{border:1px solid var(--line);border-radius:15px;background:#f8fafb;overflow:hidden}.workflow-group>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;background:#fff}.workflow-group>summary::-webkit-details-marker{display:none}.workflow-group>summary span:first-child{display:grid;gap:3px}.workflow-group>summary small{color:var(--muted);font-weight:600}.workflow-count{display:grid;place-items:center;min-width:34px;height:34px;border-radius:999px;background:var(--blue);color:var(--navy);font-weight:900}.workflow-group .job-list{padding:12px;margin:0}.workflow-empty{padding:18px;text-align:center;color:var(--muted);background:#fff;border-radius:11px;border:1px dashed #bdcbd1}.legacy-doc-select{display:none}.document-archive{display:grid;gap:10px;margin-top:18px}.archive-card{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}.archive-toggle{width:100%;border:0;background:#fff;padding:15px 16px;display:flex;justify-content:space-between;gap:16px;text-align:left;color:var(--navy)}.archive-toggle span:first-child{display:grid;gap:4px}.archive-toggle small{color:var(--muted);font-weight:600}.archive-actions{padding:12px 16px 16px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);background:#f8fafb}.archive-actions[hidden]{display:none}.archive-actions button{border:1px solid #bdcbd1;background:#fff;color:var(--navy);border-radius:9px;padding:9px 11px;font-weight:800}.archive-actions .create-sign-link{background:var(--navy);color:#fff;margin-left:auto}.contractor-job{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border:1px solid #dbe3e7;border-radius:12px;background:#fff;color:#102f45;font-weight:750}.signed-documents{margin-top:30px;padding-top:24px;border-top:1px solid var(--line)}.signed-documents h3{margin:4px 0}.signature-activity{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px;border:1px solid var(--line);border-radius:12px}.signature-activity div{display:grid;gap:4px}.signature-activity small{color:var(--muted)}.signature-activity img{width:150px;height:52px;object-fit:contain;border:1px solid var(--line);background:#fff}.cover-signatures{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0 42px}.cover-signatures span{display:block;height:28px;border-bottom:1px solid #222}.cover-signatures small{font-size:8pt}.print-monochrome{filter:grayscale(1)}.receipt-copy-break{break-before:page}.print-photos.photo-count-1{grid-template-columns:1fr}.print-photos.photo-count-1 .print-photo{height:7in}.print-photos.photo-count-1 .print-photo img{height:6.4in}.print-photos.photo-count-3{grid-template-columns:repeat(2,1fr)}.print-photos.photo-count-3 .print-photo:last-child{grid-column:1/-1}.print-photo small{display:block;padding:4px;font-size:7pt}
 @media(max-width:680px){.archive-toggle{display:grid}.archive-actions{display:grid;grid-template-columns:1fr}.archive-actions .create-sign-link{margin-left:0}.workflow-group .job-list{padding:8px}}
 @media(max-width:760px){.line-item.categorized{grid-template-columns:42px 1fr 42px}.line-item.categorized [data-f="category"],.line-item.categorized [data-f="description"],.line-item.categorized [data-f="qty"],.line-item.categorized [data-f="rate"],.line-item.categorized [data-amount]{grid-column:2}.item-header.categorized{display:none}.portal-card-actions>*{min-height:44px}.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* Niko stationery system: warm graphite + champagne, practical on letter paper */
+:root { --copper:#c49a56; --navy:#34404b; --ink:#27333b; }
+.brand-logo { object-fit:contain; filter:none; }
+.auth-visual { background:linear-gradient(140deg,#323b40,#4b4a43); }
+.auth-visual img { filter:drop-shadow(0 18px 26px rgba(0,0,0,.14)); }
+.portal-card,.form-card,.archive-card { border-color:#e3dbcf; }
+@media print {
+  @page { size:letter; margin:0; }
+  html,body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  #printArea { color:#26323a; font-family:Arial,Helvetica,sans-serif; }
+  #printArea .print-page {
+    color:#27343b; background:#fff;
+    padding:.45in .58in .53in;
+    font:9.1pt/1.34 Arial,Helvetica,sans-serif;
+    break-after:page; page-break-after:always;
+  }
+  #printArea .print-page:last-child { break-after:auto; page-break-after:auto; }
+  #printArea .print-cover { background:white; color:#2c3942; }
+  #printArea .print-cover::before { border-color:#f3ecdd; }
+  #printArea .cover-stage { background:#ecdbb7; color:#3e3424; }
+  #printArea .cover-center h1 { font-family:Georgia,'Times New Roman',serif; color:#303a43; letter-spacing:-.03em; }
+  #printArea .cover-number { color:#ac7d37; }
+  #printArea .cover-grid { border-top-color:#ac874a; }
+  #printArea .cover-logo { width:1.66in; height:1.20in; object-fit:contain; }
+  #printArea .print-brand {
+    display:flex; align-items:center;
+    border-bottom:2px solid #c49a56;
+    padding-bottom:10px; margin-bottom:13px;
+  }
+  #printArea .print-brand-logo { width:1.08in; height:.65in; margin-right:10px; object-fit:contain; }
+  #printArea .print-brand h1 { font:600 16pt/1.1 Georgia,'Times New Roman',serif; color:#364149; margin:0; }
+  #printArea .print-brand p { font-size:7.8pt; color:#697178; letter-spacing:.02em; }
+  #printArea .print-contact { color:#48525a; font-size:8pt; line-height:1.45; }
+  #printArea .print-title h2 { font:600 18pt/1.12 Georgia,'Times New Roman',serif; color:#303d46; margin-bottom:11px; }
+  #printArea .print-title span { color:#8b7046; font-size:8pt; }
+  #printArea .print-section {
+    background:#f6efe3; color:#5d482a; border-left:3px solid #b58d50;
+    padding:6px 9px; margin:11px 0 7px;
+    font-weight:800; letter-spacing:.03em;
+  }
+  #printArea .print-table { width:100%; border-collapse:collapse; margin-top:6px; }
+  #printArea .print-table th { background:#3b454c; color:#fff; font-size:8pt; }
+  #printArea .print-table th,#printArea .print-table td {
+    border:1px solid #cbd0d0; padding:6px 7px; vertical-align:top;
+  }
+  #printArea .print-table tbody tr:nth-child(even) { background:#faf8f3; }
+  #printArea .print-table tr { break-inside:avoid; }
+  #printArea .print-fields { column-gap:11px; }
+  #printArea .print-field small { color:#685b47; letter-spacing:.04em; }
+  #printArea .print-field div { border-bottom-color:#b9b4a8; }
+  #printArea .print-total { width:48%; }
+  #printArea .print-total div:last-child { border-bottom:2px solid #b58d50; padding-top:6px; font-size:10pt; }
+  #printArea .terms-ack {
+    border:1px solid #c6b690; background:#fcf9f3;
+    padding:9px 12px; font-size:8.1pt; line-height:1.4;
+  }
+  #printArea .signature-grid {
+    margin-top:17px; gap:30px; padding:13px 8px 4px;
+    border-top:1px solid #c9c1b3; break-inside:avoid;
+  }
+  #printArea .signature-grid small { display:block; color:#48545b; font-size:8pt; padding-top:6px; }
+  #printArea .signature-line { height:31px; border-bottom:1px solid #444; }
+  #printArea .print-footer { color:#666; border-top:1px solid #d8cbb4; padding-top:5px; }
+  #printArea .legal-copy { font-size:6.7pt; line-height:1.14; }
+  #printArea .legal-copy p { margin-bottom:4px; break-inside:avoid; }
+  #printArea .document-notice { font-size:7.2pt; color:#596269; }
+  #printArea .print-photo { background:#fff; border:1px solid #c8c0b1; }
+  #printArea .print-photos img { object-fit:contain; }
+  #printArea .receipt-space { border-color:#cec5b5; }
+}
